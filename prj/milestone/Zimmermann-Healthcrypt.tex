@@ -1,0 +1,144 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% MSCS 630
+% Spring 2020
+% Project Milestone
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%----------------------------------------------------------------------------------------
+%	PACKAGES AND OTHER DOCUMENT CONFIGURATIONS
+%----------------------------------------------------------------------------------------
+
+\documentclass[letterpaper, 10pt,DIV=13]{scrartcl} 
+
+\usepackage[T1]{fontenc} % Use 8-bit encoding that has 256 glyphs
+\usepackage[english]{babel} % English language/hyphenation
+\usepackage{sectsty}
+\usepackage{parskip}
+\usepackage{lastpage}
+\usepackage{setspace}
+\usepackage{indentfirst}
+\usepackage{titlesec}
+\usepackage[nottoc]{tocbibind}
+
+\titlespacing*{\section}
+{0pt}{10pt}{10pt}
+
+\usepackage{multicol}
+\columnsep 6mm
+\parskip 10pt
+
+\allsectionsfont{\normalfont\scshape} % Make all section titles in default font and small caps.
+
+\usepackage{fancyhdr} % Custom headers and footers
+\pagestyle{fancyplain} % Makes all pages in the document conform to the custom headers and footers
+
+\fancyhead{} % No page header - if you want one, create it in the same way as the footers below
+\fancyfoot[L]{} % Empty left footer
+\fancyfoot[C]{} % Empty center footer
+\fancyfoot[R]{page \thepage\ of \pageref{LastPage}} % Page numbering for right footer
+
+\def\@citex[#1]#2{%
+  \let\@citea\@empty
+  \@cite{\@for\@citeb:=#2\do
+    {\@citea\def\@citea{], [}%
+     \edef\@citeb{\expandafter\@firstofone\@citeb\@empty}%
+     \if@filesw\immediate\write\@auxout{\string\citation{\@citeb}}\fi
+     \@ifundefined{b@\@citeb}{\mbox{\reset@font\bfseries ?}%
+       \G@refundefinedtrue
+       \@latex@warning
+         {Citation `\@citeb' on page \thepage \space undefined}}%
+       {\hbox{\csname b@\@citeb\endcsname}}}}{#1}}
+
+%----------------------------------------------------------------------------------------
+%	TITLE SECTION
+%----------------------------------------------------------------------------------------
+
+\newcommand{\horrule}[1]{\rule{\linewidth}{#1}} % Create horizontal rule command with 1 argument of height
+
+\title{	
+   \normalfont \normalsize
+   \textsc{MSCS 630 - Spring 2020 - Dr. Rivas} \\ [10pt] % Header stuff.
+   \horrule{0.5pt} \\[0.25cm] 	% Top horizontal rule
+   \huge Project Milestone  \\     	    % Assignment title
+   \horrule{0.5pt} \\[0.25cm] 	% Bottom horizontal rule
+}
+
+\author{Marcus A. Zimmermann \\ \normalsize Marcus.Zimmermann1@Marist.edu}
+
+\date{\normalsize\today} 	% Today's date.
+
+\begin{document}
+\maketitle % Print the title
+
+\begin{multicols}{2}
+
+\begin{spacing}{1.25}
+\textbf{Abstract -} As technology has progressed, it has become more reasonable to store patient information in the form of electronic medical records, allowing healthcare providers to leverage the profound speed and storage capabilities of emerging technologies. However, the transition to electronic storage poses new challenges to the long-standing practice of strict doctor-patient confidentiality. To keep patient information as private and secure as possible, it is standard to encrypt electronic medical records before storing them. This paper documents the design, development, and subsequent analysis of Healthcrypt, a mock storage system built to meet this standard.
+\end{spacing}
+
+\vspace{-2.5pt}
+
+\section*{Introduction}
+\begin{spacing}{1.25}
+Healthcare providers have always taken extreme measures to ensure doctor-patient confidentiality, using systems like on-premise, lock-and-key file repositories to prevent the disclosure of personal information. However, as technology has progressed, it has become more reasonable to store this information in the form of electronic medical records. In other words, instead of maintaining a vast, tangible file system, traditional patient files have been systematically digitized and stored in electronic mediums to take advantage of the profound speed and storage capabilities of emerging technologies. These systems are fast, efficient, and scalable well beyond traditional storage mechanisms. However, they pose new, significant challenges to security as well.
+
+The inherent connectedness of electronic storage systems broadly extends the attack landscape, putting sensitive information at risk of sophisticated, novel forms of theft \cite{nistitl2017}. To strengthen the defense posture of electronic storage systems, it is standard to use state-of-the-art encryption methodologies as part of the filing and storage process, mitigating the potential harm of inappropriate and unwarranted access to sensitive information.
+
+The remainder of this paper is organized as follows: The Background and Motivation section introduces a brief history of healthcare security, as well as the motivation for the development of Healthcrypt; The Methodology section explains the design and development of Healthcrypt, including instructions to replicate the environment and launch the application for personal experimentation; the Experiments section describes Healthcrypt's performance on various tests of security; Lastly, the Discussion and Conclusions section describes observations made during the design, development, and analysis of Healthcrypt.
+\end{spacing}
+
+\vspace{-2.5pt}
+
+\section*{Background and Motivation}
+\begin{spacing}{1.25}
+As early as the 1960s and 1970s, academic medical centers, government institutions, and private industry recognized the potential of electronic medical records and the "benefits to industry-wide standards," noting the need to create "organizations to tackle the broader issues that would facilitate the widespread use of electronic medical information" \cite{ehrhistory2011}. These broad-sweeping standards naturally included concerns related to the use of and access to electronic storage systems, as "increasing the connectivity capabilities also creates cybersecurity risks" like "unauthorized access to patient health information" and "changes to prescribed drug doses," not to mention many other causes for concern \cite{nistitl2017}. Unauthorized access to, and manipulation of, patient information is not something to be taken lightly.
+
+The Security Rule under the Health Insurance Portability and Accountability Act (HIPAA) "establishes national standards to protect individuals’ electronic personal health information that is created, received, used, or maintained by a covered entity. The Security Rule requires appropriate administrative, physical and technical safeguards to ensure the confidentiality, integrity, and security of electronic protected health information" \cite{hippaprof2017}. That sounds comforting, but there is a minor detail pertaining to the implementation specifications of these technologies that may worry patients and healthcare practitioners alike. Each Rule contained within HIPAA is labeled as either 'Required' or 'Addressable.' What's the difference? Required Rules are self-explanatory. They are required. Addressable Rules, on the other hand, introduce opportunities to fall short of standards, including those related to security.
+
+Addressable Rules, such as the practice of encrypting data at rest and data in transit, are necessary when "risk analysis shows such risk to be significant," the judgment for which is deferred to the covered entity \cite{hippaprof2017}. In other words, implementing some form of encryption is left to the discretion of the health care provider. So, depending on the circumstances, your personal health information may not be encrypted at rest or in transit.
+
+It is worth noting that the United States is among the leading countries when it comes to upholding encryption standards in healthcare \cite{ponemon2020}. This includes enterprise-level encryption strategies, which certainly offer some reassurance when it comes to the safety of patient records. However, we're not perfect. Not all data are encrypted, and data breaches are still well within the realm of possibility.
+
+To better understand the systems storing and exchanging electronic medical records, the remainder of this paper documents the design, development, and analysis of Healthcrypt, an application that intends to offer a rudimentary exploration of encryption within the context of healthcare.
+
+NOTE: This pdf is part of a milestone achievement. The information above will be (or is at this point) included in the final report in the final project folder. Additionally, the code in the final project folder will be (or is at this point) completed for the final report in the final project folder.
+
+\end{spacing}
+
+\vspace{-2.5pt}
+
+\section*{Methodology}
+\begin{spacing}{1.25}
+
+Section Pending Application Completion
+
+\end{spacing}
+
+\vspace{-2.5pt}
+
+\section*{Experiments}
+\begin{spacing}{1.25}
+
+Section Pending Application Completion
+
+\end{spacing}
+
+\vspace{-2.5pt}
+
+\section*{Discussion and Conclusion}
+\begin{spacing}{1.25}
+
+Section Pending Application Completion
+
+\end{spacing}
+
+\vspace{-2.5pt}
+
+\bibliographystyle{plain}
+\bibliography{ref}
+
+\end{multicols}
+
+\end{document}
