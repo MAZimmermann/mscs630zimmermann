@@ -14,15 +14,12 @@
 
 \usepackage[T1]{fontenc} % Use 8-bit encoding that has 256 glyphs
 \usepackage[english]{babel} % English language/hyphenation
-\usepackage{amsmath,amsfonts,amsthm,xfrac} % Math packages
 \usepackage{sectsty}
-\usepackage{graphicx}
-\usepackage[lined,linesnumbered,commentsnumbered]{algorithm2e}
-\usepackage{listings}
-\usepackage{enumitem}
 \usepackage{parskip}
 \usepackage{lastpage}
 \usepackage{setspace}
+\usepackage{indentfirst}
+\usepackage{titlesec}
 
 \allsectionsfont{\normalfont\scshape} % Make all section titles in default font and small caps.
 
@@ -33,17 +30,6 @@
 \fancyfoot[L]{} % Empty left footer
 \fancyfoot[C]{} % Empty center footer
 \fancyfoot[R]{page \thepage\ of \pageref{LastPage}} % Page numbering for right footer
-
-\renewcommand{\headrulewidth}{0pt} % Remove header underlines
-\renewcommand{\footrulewidth}{0pt} % Remove footer underlines
-\setlength{\headheight}{13.6pt} % Customize the height of the header
-
-\numberwithin{equation}{section} % Number equations within sections (i.e. 1.1, 1.2, 2.1, 2.2 instead of 1, 2, 3, 4)
-\numberwithin{figure}{section} % Number figures within sections (i.e. 1.1, 1.2, 2.1, 2.2 instead of 1, 2, 3, 4)
-\numberwithin{table}{section} % Number tables within sections (i.e. 1.1, 1.2, 2.1, 2.2 instead of 1, 2, 3, 4)
-
-\binoppenalty=3000
-\relpenalty=3000
 
 %----------------------------------------------------------------------------------------
 %	TITLE SECTION
@@ -66,7 +52,7 @@
 \begin{document}
 \maketitle % Print the title
 
-\section*{Healthcrypt (Name Subject to Change)}
+\section*{Healthcrypt}
 
 \begin{spacing}{1.25}
 I propose to build a web application - developed and deployed locally via virtualenv, flask, and other tools and libraries - for physicians, providing a personal repository for confidential patient information. After creating an account and logging into the application, the physician is presented with a homepage from which he or she can create, read, update, and delete patient records. These records are presented as a form, prompting the physician for the patient's age, height, weight, and other basic information. Encryption comes into play when the form is saved, and the physician returns to his or her homepage. Each entry in the form will be encrypted individually before being stored together, as a record in a database with multiple values. If the physician wishes to read and/or update the form after it's initial save in the database, each value in the record will have to be decrypted before being displayed in the form again. Lastly, the physicians' usernames and passwords will also be encrypted before being stored. This web application is not intended to protect information in transit. It simply provides secure storage for sensitive medical records.

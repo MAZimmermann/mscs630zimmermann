@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+  <hr>
+
+  <h1>Welcome, {{ physician.fname.capitalize() }} </h1>
+
+  <hr>
+
+  <a href="{{ url_for('physician', username=physician) }}">Home</a>
+
+  <a href="{{ url_for('logout') }}">Logout</a>
+
+  <hr>
+
+  <h1>Record List</h1>
+
+  {% for record in records %}
+
+    <div>
+
+      <p>
+
+        {{ record.id }} @ {{ record.timestamp }}
+
+      </p>
+
+    </div>
+
+  {% endfor %}
+
+{% endblock %}

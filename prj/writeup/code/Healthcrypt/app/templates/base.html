@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+
+    <title>Healthcrypt</title>
+
+    <link rel="stylesheet" type="text/css"
+    href="{{ url_for('static',filename='styles/normalize.css') }}">
+
+    <link rel="stylesheet" type="text/css"
+    href="{{ url_for('static',filename='styles/skeleton.css') }}">
+
+  </head>
+
+  <body>
+
+  <div class="container">
+
+
+    {% if current_user.is_anonymous %}
+
+        {% if url_for(request.endpoint) == url_for('register') %}
+
+          <hr>
+
+        {% else %}
+        
+          <hr>
+        
+          <h1>Welcome to Healthcrypt</h1>
+        
+        {% endif %}
+
+      <a href="{{ url_for('login') }}">Home</a>
+
+      <hr>
+
+    {% else %}
+
+    {% endif %}
+
+    <div id="content">
+
+      <!-- DISPLAY FLASH MESSAGES -->
+
+      {% with messages = get_flashed_messages() %}
+
+        {% if messages %}
+
+          <ul>
+
+          {% for message in messages %}
+
+          <li>{{ message }}</li>
+
+          {% endfor %}
+
+          </ul>
+
+        {% endif %}
+
+      {% endwith %}
+
+      <!-- DISPLAY BLOCK CONTENT -->
+      {% block content %}
+      
+      {% endblock %}
+
+      <!-- DISPLAY REGISTRATION PROMPT (if necessary) -->
+      {% if current_user.is_anonymous %}
+     
+        {% if url_for(request.endpoint) == url_for('register') %}
+
+        {% else %}
+
+          <p>New User? <a href="{{ url_for('register') }}">Click to Register!</a></p>
+
+        {% endif %}
+
+      {% else %}
+
+      {% endif %}
+
+    </div>
+
+  </div>
+
+  </body>
+
+</html>
