@@ -41,11 +41,10 @@ def load_user(id):
 # RECORD
 class Record(db.Model):
 
-  id        = db.Column(db.Integer,     primary_key=True)
-  timestamp = db.Column(db.DateTime,    index=True, default=datetime.utcnow)
-  #username = db.Column(db.String(128), db.ForeignKey("physician.username"))
-  phys_id   = db.Column(db.Integer,     db.ForeignKey('physician.id'))
-
+  id             = db.Column(db.Integer,  primary_key=True)
+  phys_id        = db.Column(db.Integer,  db.ForeignKey('physician.id'))
+  create_date    = db.Column(db.DateTime, index=True)
+  last_edit_date = db.Column(db.DateTime, default=datetime.utcnow)
   
   patfname = db.Column(db.String(128))
   patlname = db.Column(db.String(128))
@@ -58,3 +57,24 @@ class Record(db.Model):
       timestamp = self.timestamp,
       lname     = self.username,
       fname     = self.username)
+
+  def get_id(self):
+    return self.id
+
+  def set_create_date(self):
+    self.create_date = datetime.utcnow()
+
+  def set_last_edit_date(self):
+    self.last_edit_date = datetime.utcnow()
+
+  def set_patfname(self, patfname):
+    self.patfname = patfname
+    
+  def set_patlname(self, patlname):
+    self.patlname = patlname
+
+  def set_patdob(self, patdob):
+    self.patdob = patdob
+
+  def set_patdiag(self, patdiag):
+    self.patdiag = patdiag

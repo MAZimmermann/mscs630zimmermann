@@ -10,7 +10,7 @@ from app           import app, db
 
 from app.forms     import LoginForm, RegistrationForm, RecordForm
 
-from app.models    import Physician
+from app.models    import Physician, Record
 
 
 
@@ -83,25 +83,6 @@ def logout():
 @app.route('/physician/<username>')
 @login_required
 def physician(username):
-
-  form = RecordForm()
-
-  if form.validate_on_submit():
-
-    record = Record(patfname=form.patfname.data, author=current_user)
-
-    db.session.add(record)
-
-    db.session.commit()
-
-    flash("Your record was successfully submitted")
-
-    physician = Physician.query.filter_by(username=username).first_or_404()
-  
-    records = current_user.get_records().all()
-  
-    return render_template('physician.html', physician=physician,
-      records=records)
   
   physician = current_user
   
@@ -128,9 +109,9 @@ def register():
 
   if form.validate_on_submit():
 
-    physician = Physician(username=form.username.data,
-      fname=form.fname.data,
-      lname=form.lname.data)
+    physician = Physician(username = form.username.data,
+      fname = form.fname.data,
+      lname = form.lname.data)
 
     physician.set_password(form.userpwd.data)
 
@@ -139,11 +120,85 @@ def register():
     db.session.commit()
 
     flash("Registration completed!")
+    
+    logout_user()
 
     return redirect(url_for("login"))
 
-  #else:
-
-    #return render_template("register.html", form=form)
-
   return render_template("register.html", form=form)
+
+
+
+
+# NEWRECORD ----- ----- ----- ----- -----
+@app.route('/newrecord/<username>', methods=["GET", "POST"])
+@login_required
+def newrecord(username):
+
+  physician = current_user
+
+  record = Record(author = physician)
+
+  record.set_create_date()
+
+  db.session.add(record)
+  
+  db.session.commit()
+  
+  recordid = record.get_id()
+  
+  newid = str(recordid)
+  
+  physician = current_user.username
+
+  return redirect(url_for("record", username=physician, id=newid))
+
+
+
+
+
+# RECORD ----- ----- ----- ----- -----
+@app.route('/record/<username>/<id>', methods=["GET", "POST"])
+@login_required
+def record(username, id):
+
+  form = RecordForm()
+
+  if form.validate_on_submit():
+
+    record = Record.query.filter_by(id=int(id)).first()
+
+    record.set_patfname(form.patfname.data)
+
+    record.set_patlname(form.patlname.data)
+
+    record.set_patdob(form.patdob.data)
+
+    record.set_patdiag(form.patdiag.data)
+
+    record.set_last_edit_date()
+
+    db.session.commit()
+
+    flash("Your record was successfully submitted")
+  
+    physician = current_user
+  
+    records = physician.get_records().all()
+  
+    return render_template('physician.html', physician=physician,
+      records=records)
+    
+  elif request.method == 'GET':
+
+    record = Record.query.filter_by(id=int(id)).first()
+
+    form.patfname.data = record.patfname
+    
+    form.patlname.data = record.patlname
+
+    form.patdob.data = record.patdob
+    
+    form.patdiag.data = record.patdiag
+
+  return render_template("record.html", form=form)
