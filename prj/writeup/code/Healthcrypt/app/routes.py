@@ -12,20 +12,16 @@ from app.forms     import LoginForm, RegistrationForm, RecordForm
 
 from app.models    import Physician, Record
 
+from cryptography.fernet import Fernet
 
 
 
 
-# TO-DO: Redirect entirely instead of just loading
-#  templates for certain requests
+# ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
+# ROUTES
 
-
-
-
-
-# ROUTES ----- ----- ----- ----- -----
-
-# LOGIN  ----- ----- ----- ----- -----
+# ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
+# LOGIN
 @app.route("/",      methods=["GET", "POST"])
 @app.route("/login", methods=["GET", "POST"])
 def login():
@@ -34,10 +30,13 @@ def login():
     
     physician = current_user
     
-    records = current_user.get_records().all()
-    
-    return render_template("physician.html",
-      physician=physician, records=records)
+    next_page = request.args.get("next")
+
+    if not next_page or url_parse(next_page).netloc != "":
+
+      next_page = url_for("physician", username=physician.username)
+
+    return redirect(next_page)
 
   form = LoginForm()
 
@@ -47,7 +46,7 @@ def login():
 
     if physician is None or not physician.get_password():
 
-      flash("Invalid username or password.")
+      flash("Invalid Username or Password")
 
       return redirect(url_for("login"))
 
@@ -67,7 +66,8 @@ def login():
 
 
 
-# LOGOUT    ----- ----- ----- ----- -----
+# ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
+# LOGOUT
 @app.route("/logout")
 def logout():
 
@@ -79,23 +79,36 @@ def logout():
 
 
 
-# PHYSICIAN ----- ----- ----- ----- -----
+# ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
+# PHYSICIAN
 @app.route('/physician/<username>')
 @login_required
 def physician(username):
   
-  physician = current_user
-  
-  records = current_user.get_records().all()
-  
+  physician = Physician.query.filter_by(username=username).first_or_404()
+
+  key = physician.get_key()
+
+  page = request.args.get("page", 1, type=int)
+
+  records = physician.records.order_by(Record.create_date.desc()).paginate(
+    page, 3, False)
+
+  next_url = url_for("physician", username=physician.username, page=records.next_num)\
+    if records.has_next else None
+
+  prev_url = url_for("physician", username=physician.username, page=records.prev_num)\
+    if records.has_prev else None
+
   return render_template("physician.html", physician=physician,
-    records=records)
+    records=records.items, next_url=next_url, prev_url=prev_url, key=key)
 
 
 
 
 
-# REGISTER  ----- ----- ----- ----- -----
+# ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
+# REGISTER
 @app.route("/register", methods=["GET", "POST"])
 def register():
 
@@ -111,9 +124,8 @@ def register():
 
     physician = Physician(username = form.username.data,
       fname = form.fname.data,
-      lname = form.lname.data)
-
-    physician.set_password(form.userpwd.data)
+      lname = form.lname.data,
+      userpwd = form.userpwd.data)
 
     db.session.add(physician)
 
@@ -130,75 +142,143 @@ def register():
 
 
 
-# NEWRECORD ----- ----- ----- ----- -----
-@app.route('/newrecord/<username>', methods=["GET", "POST"])
+
+# ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
+# NEWRECORD
+@app.route('/newrecord/<username>/<key>', methods=["GET", "POST"])
 @login_required
-def newrecord(username):
+def newrecord(username, key):
+
+  f = Fernet(key)
 
   physician = current_user
 
   record = Record(author = physician)
+
+  store = ""
+
+  store = f.encrypt(store.encode('utf-8'))
+
+  record.set_patfname(store)
+
+  record.set_patlname(store)
+
+  record.set_patdob(store)
+
+  record.set_patdiag(store)
 
   record.set_create_date()
 
   db.session.add(record)
   
   db.session.commit()
-  
+
+  flash("Your record was successfully created. Add patient information and click 'Submit'.")
+
   recordid = record.get_id()
   
   newid = str(recordid)
   
   physician = current_user.username
 
-  return redirect(url_for("record", username=physician, id=newid))
+  return redirect(url_for("record", username=physician, id=newid, key=key))
 
 
 
 
 
-# RECORD ----- ----- ----- ----- -----
-@app.route('/record/<username>/<id>', methods=["GET", "POST"])
+# ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
+# DELETERECORD
+@app.route('/delete/<username>/<key>/<id>', methods=["GET", "POST"])
 @login_required
-def record(username, id):
+def deleterecord(username, key, id):
+
+  record = Record.query.filter_by(id=int(id)).first()
+
+  db.session.delete(record)
+
+  db.session.commit()
+
+  flash("Your record was successfully deleted.")
+
+  physician = current_user
+
+  next_page = request.args.get("next")
+
+  if not next_page or url_parse(next_page).netloc != "":
+
+    next_page = url_for("physician", username=physician.username)
+
+  return redirect(next_page)
+
+
+
+
+
+# ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
+# RECORD
+@app.route('/record/<username>/<key>/<id>', methods=["GET", "POST"])
+@login_required
+def record(username, key, id):
 
   form = RecordForm()
+
+  f = Fernet(key)
 
   if form.validate_on_submit():
 
     record = Record.query.filter_by(id=int(id)).first()
 
-    record.set_patfname(form.patfname.data)
+    store = f.encrypt(form.patfname.data.encode('utf-8'))
 
-    record.set_patlname(form.patlname.data)
+    record.set_patfname(store)
 
-    record.set_patdob(form.patdob.data)
+    store = f.encrypt(form.patlname.data.encode('utf-8'))
 
-    record.set_patdiag(form.patdiag.data)
+    record.set_patlname(store)
+
+    store = f.encrypt(form.patdob.data.encode('utf-8'))
+
+    record.set_patdob(store)
+
+    store = f.encrypt(form.patdiag.data.encode('utf-8'))
+
+    record.set_patdiag(store)
 
     record.set_last_edit_date()
 
     db.session.commit()
 
-    flash("Your record was successfully submitted")
-  
+    flash("Your record was successfully updated.")
+
     physician = current_user
   
-    records = physician.get_records().all()
-  
-    return render_template('physician.html', physician=physician,
-      records=records)
+    next_page = request.args.get("next")
+
+    if not next_page or url_parse(next_page).netloc != "":
+
+      next_page = url_for("physician", username=physician.username)
+
+    return redirect(next_page)
     
   elif request.method == 'GET':
 
     record = Record.query.filter_by(id=int(id)).first()
 
-    form.patfname.data = record.patfname
-    
-    form.patlname.data = record.patlname
+    data = f.decrypt(record.patfname)
 
-    form.patdob.data = record.patdob
-    
-    form.patdiag.data = record.patdiag
+    form.patfname.data = data.decode('utf-8')
+
+    data = f.decrypt(record.patlname)
+
+    form.patlname.data = data.decode('utf-8')
+
+    data = f.decrypt(record.patdob)
+
+    form.patdob.data = data.decode('utf-8')
+
+    data = f.decrypt(record.patdiag)
+
+    form.patdiag.data = data.decode('utf-8')
 
   return render_template("record.html", form=form)

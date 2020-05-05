@@ -9,13 +9,13 @@
     <div class="twelve columns">
     
       <h1>Welcome, {{ physician.fname.capitalize() }} </h1>
-          
+
     </div>
 
     <div class="twelve columns" style="display: flex; justify-content: space-between;">
     
-      <a class="button button-primary" href="{{ url_for('physician', username=physician) }}">Home</a>
-      
+      <a class="button button-primary" href="{{ url_for('login') }}">Home</a>
+
       <a class="button button-primary" href="{{ url_for('logout') }}">Logout</a>
     
     </div>
@@ -23,6 +23,30 @@
   </div>
 
   <hr>
+  
+  <!-- DISPLAY FLASH MESSAGES FOR AUTHENTICATED USERS HERE -->
+
+  {% if current_user.is_authenticated %}
+
+  {% with messages = get_flashed_messages() %}
+
+    {% if messages %}
+
+      <ul>
+
+      {% for message in messages %}
+
+      <li>{{ message }}</li>
+
+      {% endfor %}
+
+      </ul>
+
+    {% endif %}
+
+  {% endwith %}
+  
+  {% endif %}
 
   <div class="row">
 
@@ -30,26 +54,76 @@
     
       <h1>Record List</h1>
       
-      <a class="button button-primary" href="{{ url_for('newrecord', username=physician) }}">Create New Record</a>
+      <a class="button button-primary" href="{{ url_for('newrecord', username=physician, key=key) }}">Create New Record</a>
       
     </div>
+    
+  </div>
+
+  {% if records|length > 0 %}
+
+    <hr>
+
+  {% else %}
+
+    <hr>
+
+    <h6>No Records to Display</h6>
+
+  {% endif %}
+
+  <div class="row">
 
     {% for record in records %}
 
       <div class="twelve columns" style="border: solid black 1px; padding: 2.5%; margin-bottom: 10px;">
 
-        <p>{{ record.patlname }}, {{ record.patfname }}</p>
+        <p>{{ decode(record.patlname, key).capitalize() }}, {{ decode(record.patfname, key).capitalize() }}</p>
 
         <p>Creation Date: {{ record.create_date }}</p>
         
         <p>Last Edit Date: {{ record.last_edit_date }}</p>
         
-        <p><a class="button" href="{{ url_for('record', username=physician, id=record.id) }}">Update</a></p>
+        <p><a class="button" href="{{ url_for('record', username=physician, key=key, id=record.id) }}">Update</a></p>
+
+        <p><a class="button" href="{{ url_for('deleterecord', username=physician, key=key, id=record.id) }}">Delete</a></p>
 
       </div>
 
     {% endfor %}
   
   </div>
+
+  {% if next_url or prev_url%}
+
+    <hr>
+
+  {% endif %}
+
+  <div class="row">
+
+    <div class="twelve columns">
+
+      {% if prev_url %}
+
+        <a href="{{ prev_url }}" style="float: left;">Previous</a>
+
+      {% endif %}
+
+      {% if next_url %}
+
+        <a href="{{ next_url }}" style="float: right;">Next</a>
+
+      {% endif %}
+
+    </div>
+
+  </div>
+
+  {% if next_url or prev_url%}
+
+    <hr>
+
+  {% endif %}
 
 {% endblock %}

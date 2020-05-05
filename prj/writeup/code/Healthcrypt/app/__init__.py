@@ -10,6 +10,8 @@ from flask_login      import LoginManager
 
 from config           import Config
 
+from cryptography.fernet import Fernet
+
 # INITIALIZATION/CONFIGURATION STATEMENTS
 
 # "flask" is a framework
@@ -28,8 +30,20 @@ migrate = Migrate(app, db)
 
 login_manager = LoginManager(app)
 
-login_manager.login_view = 'login'
-
-# FINAL IMPORT STATEMENT (this time, developer code)
+login_manager.login_view = "login"
 
 from app import routes, models
+
+# GLOBAL FUNCTIONS CALLED IN JINJA TEMPLATES
+
+def decode(item, key):
+
+  f = Fernet(key)
+
+  data = f.decrypt(item)
+
+  data = data.decode('utf-8')
+
+  return data
+
+app.jinja_env.globals.update(decode=decode)

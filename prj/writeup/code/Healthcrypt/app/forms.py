@@ -1,16 +1,18 @@
 # IMPORT STATEMENTS
 
-from flask_wtf          import FlaskForm
+from flask_wtf           import FlaskForm
 
-from wtforms            import StringField, PasswordField
+from wtforms             import StringField, PasswordField
 
-from wtforms            import TextAreaField, SubmitField
+from wtforms             import TextAreaField, SubmitField
 
-from wtforms.validators import ValidationError, Length
+from wtforms.validators  import ValidationError, Length
 
-from wtforms.validators import DataRequired, EqualTo
+from wtforms.validators  import DataRequired, EqualTo
 
-from app.models         import Physician
+from app.models          import Physician
+
+from cryptography.fernet import Fernet
 
 # WEB FORM CLASSES
 
@@ -47,7 +49,7 @@ class RegistrationForm(FlaskForm):
 
       raise ValidationError("Please use a different username.")
 
-# RECORD FORM (to-do: implement form in jinja html template)
+# RECORD FORM
 class RecordForm(FlaskForm):
 
   patfname = StringField("Patient First Name",    validators=[DataRequired()])

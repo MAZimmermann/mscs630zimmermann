@@ -2,7 +2,35 @@
 
 {% block content %}
 
-  <h1>Create and/or Edit Record</h1>
+  <hr>
+
+  <h1>Edit Record</h1>
+
+  <!-- DISPLAY FLASH MESSAGES FOR AUTHENTICATED USERS HERE -->
+
+  {% if current_user.is_authenticated %}
+
+  {% with messages = get_flashed_messages() %}
+
+    {% if messages %}
+
+      <ul>
+
+      {% for message in messages %}
+
+      <li>{{ message }}</li>
+
+      {% endfor %}
+
+      </ul>
+
+    {% endif %}
+
+  {% endwith %}
+  
+  {% endif %}
+
+  <hr>
 
   <form action="" method="post">
   

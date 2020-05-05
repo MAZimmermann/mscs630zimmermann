@@ -45,7 +45,9 @@
 
     <div id="content">
 
-      <!-- DISPLAY FLASH MESSAGES -->
+      <!-- DISPLAY FLASH MESSAGES FOR ANONYMOUS USERS HERE -->
+
+      {% if current_user.is_anonymous %}
 
       {% with messages = get_flashed_messages() %}
 
@@ -64,6 +66,8 @@
         {% endif %}
 
       {% endwith %}
+      
+      {% endif %}
 
       <!-- DISPLAY BLOCK CONTENT -->
       {% block content %}
