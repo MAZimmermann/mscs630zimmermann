@@ -16,6 +16,8 @@ from cryptography.fernet import Fernet
 
 from datetime      import datetime
 
+import hashlib as h
+
 
 
 
@@ -47,7 +49,17 @@ def login():
 
     physician = Physician.query.filter_by(username=form.username.data).first()
 
-    if physician is None or not physician.get_password():
+    attemptedpwd = h.md5(form.password.data.encode())
+
+    attemptedpwd = attemptedpwd.hexdigest()
+
+    if physician is None:
+
+      flash("Invalid Username or Password")
+
+      return redirect(url_for("login"))
+
+    elif attemptedpwd != physician.get_password():
 
       flash("Invalid Username or Password")
 
@@ -125,10 +137,14 @@ def register():
 
   if form.validate_on_submit():
 
+    pwd = h.md5(form.userpwd.data.encode())
+
+    pwd = pwd.hexdigest()
+
     physician = Physician(username = form.username.data,
       fname = form.fname.data,
       lname = form.lname.data,
-      userpwd = form.userpwd.data)
+      userpwd = pwd)
 
     db.session.add(physician)
 

@@ -1,7 +1,9 @@
 # IMPORT STATEMENTS
 
 from datetime    import datetime
+
 from app         import db, login_manager
+
 from flask_login import UserMixin
 
 """
@@ -42,16 +44,16 @@ class Physician(UserMixin, db.Model):
   # "__init__" OVERRIDES DEFAULT CONSTRUCTOR
   
   def __init__(self, fname, lname, username, userpwd):
-    
+
     key = Fernet.generate_key()
-    
+
     self.key = key
-    
+
     f = Fernet(key)
-    
-    self.fname = f.encrypt(fname.encode('utf-8'))
-    self.lname = f.encrypt(lname.encode('utf-8'))
-    
+
+    self.fname = f.encrypt(fname.encode("utf-8"))
+    self.lname = f.encrypt(lname.encode("utf-8"))
+
     self.username = username #f.encrypt(username.encode('utf-8'))
     self.userpwd  = userpwd  #f.encrypt(userpwd.encode('utf-8'))
 
