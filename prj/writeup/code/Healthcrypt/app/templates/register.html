@@ -8,101 +8,113 @@
 
     {{ form.hidden_tag() }}
 
-    <p><!-- USERNAME FIELD -->
+    <div class="row">
 
-      {{ form.username.label }}
+      <div class="form-column"><!-- LEFT SIDE OF FORM -->
 
-      <br>
+        <p><!-- USERNAME FIELD -->
 
-      {{ form.username(size=32) }}
+          {{ form.username.label }}
 
-      <br>
+          <br>
 
-      {% for error in form.username.errors %}
+          {{ form.username(size=32) }}
 
-        <span style="color: red;">[{{ error }}]</span>
+          <br>
 
-    {% endfor %}
+          {% for error in form.username.errors %}
 
-    </p>
-    
-    <p><!-- FIRST NAME FIELD -->
+            <span style="color: red;">[{{ error }}]</span>
 
-      {{ form.fname.label }}
+        {% endfor %}
 
-      <br>
+        </p>
 
-      {{ form.fname(size=32) }}
+        <p><!-- PASSWORD FIELD -->
 
-      <br>
+          {{ form.userpwd.label }}
 
-      {% for error in form.fname.errors %}
+          <br>
 
-        <span style="color: red;">[{{ error }}]</span>
+          {{ form.userpwd(size=32) }}
 
-      {% endfor %}
+          <br>
 
-    </p>
-    
-    <p><!-- LAST NAME FIELD -->
+          {% for error in form.userpwd.errors %}
 
-      {{ form.lname.label }}
+            <span style="color: red;">[{{ error }}]</span>
 
-      <br>
+          {% endfor %}
 
-      {{ form.lname(size=32) }}
+        </p>
 
-      <br>
+        <p><!-- PASSWORD CONFIRMATION FIELD -->
 
-      {% for error in form.lname.errors %}
+          {{ form.userpwd2.label }}
 
-        <span style="color: red;">[{{ error }}]</span>
+          <br>
 
-      {% endfor %}
+          {{ form.userpwd2(size=32) }}
 
-    </p>
+          <br>
 
-    <p><!-- PASSWORD FIELD -->
+          {% for error in form.userpwd2.errors %}
 
-      {{ form.userpwd.label }}
+            <span style="color: red;">[{{ error }}]</span>
 
-      <br>
+          {% endfor %}
 
-      {{ form.userpwd(size=32) }}
+        </p>
+      
+      </div>
 
-      <br>
+      <div class="form-column"><!-- RIGHT SIDE OF FORM -->
+      
+            <p><!-- FIRST NAME FIELD -->
 
-      {% for error in form.userpwd.errors %}
+          {{ form.fname.label }}
 
-        <span style="color: red;">[{{ error }}]</span>
+          <br>
 
-      {% endfor %}
+          {{ form.fname(size=32) }}
 
-    </p>
+          <br>
 
-    <p><!-- PASSWORD CONFIRMATION FIELD -->
+          {% for error in form.fname.errors %}
 
-      {{ form.userpwd2.label }}
+            <span style="color: red;">[{{ error }}]</span>
 
-      <br>
+          {% endfor %}
 
-      {{ form.userpwd2(size=32) }}
+        </p>
+        
+        <p><!-- LAST NAME FIELD -->
 
-      <br>
+          {{ form.lname.label }}
 
-      {% for error in form.userpwd2.errors %}
+          <br>
 
-        <span style="color: red;">[{{ error }}]</span>
+          {{ form.lname(size=32) }}
 
-      {% endfor %}
+          <br>
 
-    </p>
+          {% for error in form.lname.errors %}
 
-    <p><!-- SUBMISSION BUTTON -->
+            <span style="color: red;">[{{ error }}]</span>
 
-      {{ form.submit() }}
+          {% endfor %}
 
-    </p>
+        </p>
+
+        <p><!-- SUBMISSION BUTTON -->
+
+          {{ form.submit() }}
+
+        </p>
+
+      </div>
+
+    </div>
 
   </form>
 

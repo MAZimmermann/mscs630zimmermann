@@ -14,6 +14,9 @@ from app.models    import Physician, Record
 
 from cryptography.fernet import Fernet
 
+from datetime      import datetime
+
+
 
 
 
@@ -81,7 +84,7 @@ def logout():
 
 # ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
 # PHYSICIAN
-@app.route('/physician/<username>')
+@app.route("/physician/<username>")
 @login_required
 def physician(username):
   
@@ -91,8 +94,8 @@ def physician(username):
 
   page = request.args.get("page", 1, type=int)
 
-  records = physician.records.order_by(Record.create_date.desc()).paginate(
-    page, 3, False)
+  records = physician.records.order_by(Record.date_created.desc()).paginate(
+    page, 2, False)
 
   next_url = url_for("physician", username=physician.username, page=records.next_num)\
     if records.has_next else None
@@ -132,7 +135,7 @@ def register():
     db.session.commit()
 
     flash("Registration completed!")
-    
+
     logout_user()
 
     return redirect(url_for("login"))
@@ -145,7 +148,7 @@ def register():
 
 # ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
 # NEWRECORD
-@app.route('/newrecord/<username>/<key>', methods=["GET", "POST"])
+@app.route("/newrecord/<username>/<key>", methods=["GET", "POST"])
 @login_required
 def newrecord(username, key):
 
@@ -157,7 +160,7 @@ def newrecord(username, key):
 
   store = ""
 
-  store = f.encrypt(store.encode('utf-8'))
+  store = f.encrypt(store.encode("utf-8"))
 
   record.set_patfname(store)
 
@@ -167,7 +170,7 @@ def newrecord(username, key):
 
   record.set_patdiag(store)
 
-  record.set_create_date()
+  record.set_date_created()
 
   db.session.add(record)
   
@@ -189,7 +192,7 @@ def newrecord(username, key):
 
 # ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
 # DELETERECORD
-@app.route('/delete/<username>/<key>/<id>', methods=["GET", "POST"])
+@app.route("/delete/<username>/<key>/<id>", methods=["GET", "POST"])
 @login_required
 def deleterecord(username, key, id):
 
@@ -217,7 +220,7 @@ def deleterecord(username, key, id):
 
 # ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
 # RECORD
-@app.route('/record/<username>/<key>/<id>', methods=["GET", "POST"])
+@app.route("/record/<username>/<key>/<id>", methods=["GET", "POST"])
 @login_required
 def record(username, key, id):
 
@@ -229,23 +232,27 @@ def record(username, key, id):
 
     record = Record.query.filter_by(id=int(id)).first()
 
-    store = f.encrypt(form.patfname.data.encode('utf-8'))
+    store = f.encrypt(form.patfname.data.encode("utf-8"))
 
     record.set_patfname(store)
 
-    store = f.encrypt(form.patlname.data.encode('utf-8'))
+    store = f.encrypt(form.patlname.data.encode("utf-8"))
 
     record.set_patlname(store)
 
-    store = f.encrypt(form.patdob.data.encode('utf-8'))
+    store = form.patdob.data
+    
+    store = datetime.strftime(store, "%Y-%m-%d")
+
+    store = f.encrypt(store.encode("utf-8"))
 
     record.set_patdob(store)
 
-    store = f.encrypt(form.patdiag.data.encode('utf-8'))
+    store = f.encrypt(form.patdiag.data.encode("utf-8"))
 
     record.set_patdiag(store)
 
-    record.set_last_edit_date()
+    record.set_date_last_modified()
 
     db.session.commit()
 
@@ -261,24 +268,34 @@ def record(username, key, id):
 
     return redirect(next_page)
     
-  elif request.method == 'GET':
+  elif request.method == "GET":
 
     record = Record.query.filter_by(id=int(id)).first()
 
     data = f.decrypt(record.patfname)
 
-    form.patfname.data = data.decode('utf-8')
+    form.patfname.data = data.decode("utf-8")
 
     data = f.decrypt(record.patlname)
 
-    form.patlname.data = data.decode('utf-8')
+    form.patlname.data = data.decode("utf-8")
 
     data = f.decrypt(record.patdob)
 
-    form.patdob.data = data.decode('utf-8')
+    data = data.decode("utf-8")
+
+    if data == "":
+
+      data = data
+
+    else:
+
+      data = datetime.strptime(data, "%Y-%m-%d")
+
+    form.patdob.data = data
 
     data = f.decrypt(record.patdiag)
 
-    form.patdiag.data = data.decode('utf-8')
+    form.patdiag.data = data.decode("utf-8")
 
   return render_template("record.html", form=form)

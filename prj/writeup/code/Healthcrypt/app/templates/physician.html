@@ -8,7 +8,7 @@
 
     <div class="twelve columns">
     
-      <h1>Welcome, {{ physician.fname.capitalize() }} </h1>
+      <h1>Welcome, {{ decode(physician.fname, key).capitalize() }} </h1>
 
     </div>
 
@@ -79,10 +79,12 @@
       <div class="twelve columns" style="border: solid black 1px; padding: 2.5%; margin-bottom: 10px;">
 
         <p>{{ decode(record.patlname, key).capitalize() }}, {{ decode(record.patfname, key).capitalize() }}</p>
-
-        <p>Creation Date: {{ record.create_date }}</p>
         
-        <p>Last Edit Date: {{ record.last_edit_date }}</p>
+        <p>Date of Birth: {{ decode(record.patdob, key) }}</p>
+
+        <p>Date Created: {{ record.date_created }}</p>
+        
+        <p>Date Last Modified: {{ record.date_last_modified }}</p>
         
         <p><a class="button" href="{{ url_for('record', username=physician, key=key, id=record.id) }}">Update</a></p>
 

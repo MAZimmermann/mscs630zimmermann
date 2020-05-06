@@ -42,7 +42,7 @@ def decode(item, key):
 
   data = f.decrypt(item)
 
-  data = data.decode('utf-8')
+  data = data.decode("utf-8")
 
   return data
 

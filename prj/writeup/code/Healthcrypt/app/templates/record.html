@@ -30,68 +30,96 @@
   
   {% endif %}
 
-  <hr>
-
   <form action="" method="post">
-  
-  {{ form.hidden_tag() }}
-  
-  <p>
-  
-   {{ form.patfname.label }}<br>
-   {{ form.patfname(size=32) }}<br>
-  
-    {% for error in form.patfname.errors %}
-    
-      <span style="color: red;">[{{ error }}]</span>
-      
-    {% endfor %}
-  
-  </p>
-  
-  <p>
-  
-   {{ form.patlname.label }}<br>
-   {{ form.patlname(size=32) }}<br>
-  
-    {% for error in form.patlname.errors %}
-    
-      <span style="color: red;">[{{ error }}]</span>
-      
-    {% endfor %}
-  
-  </p>
-  
-  <p>
-  
-  <p>
-  
-   {{ form.patdob.label }}<br>
-   {{ form.patdob(size=32) }}<br>
-  
-    {% for error in form.patdob.errors %}
-    
-      <span style="color: red;">[{{ error }}]</span>
-      
-    {% endfor %}
-  
-  </p>
-  
-  <p>
-  
-  {{ form.patdiag.label }}<br>
-  {{ form.patdiag(cols=50, rows=4) }}<br>
-  
-  {% for error in form.patdiag.errors %}
-  
-    <span style="color: red;">[{{ error }}]</span>
-  
-  {% endfor %}
-  
-  </p>
-  
-  <p>{{ form.submit() }}</p>
-  
+
+    {{ form.hidden_tag() }}
+
+    <div class="row">
+
+      <div class="form-column"><!-- LEFT SIDE OF FORM -->
+
+        <p>
+
+          {{ form.patfname.label }}
+
+          <br>
+
+          {{ form.patfname(size=32) }}
+
+          <br>
+
+          {% for error in form.patfname.errors %}
+
+            <span style="color: red;">[{{ error }}]</span>
+
+          {% endfor %}
+
+        </p>
+
+        <p>
+
+          {{ form.patlname.label }}
+
+          <br>
+
+          {{ form.patlname(size=32) }}
+
+          <br>
+
+          {% for error in form.patlname.errors %}
+
+            <span style="color: red;">[{{ error }}]</span>
+
+          {% endfor %}
+
+        </p>
+
+        <p>
+
+          {{ form.patdob.label }}
+
+          <br>
+
+          {{ form.patdob() }}
+
+          <br>
+
+          {% for error in form.patdob.errors %}
+
+            <span style="color: red;">[{{ error }}]</span>
+
+          {% endfor %}
+
+        </p>
+
+      </div>
+
+      <div class="form-column"><!-- RIGHT SIDE OF FORM -->
+
+        <p>
+
+          {{ form.patdiag.label }}
+
+          <br>
+
+          {{ form.patdiag(cols=50, rows=4) }}
+
+          <br>
+
+          {% for error in form.patdiag.errors %}
+
+            <span style="color: red;">[{{ error }}]</span>
+
+          {% endfor %}
+
+        </p>
+
+        <p>{{ form.submit() }}</p>
+
+      </div>
+
+    </div>
+
   </form>
 
 {% endblock %}

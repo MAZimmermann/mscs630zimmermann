@@ -1,18 +1,20 @@
 # IMPORT STATEMENTS
 
-from flask_wtf           import FlaskForm
+from flask_wtf            import FlaskForm
 
-from wtforms             import StringField, PasswordField
+from wtforms              import StringField, PasswordField
 
-from wtforms             import TextAreaField, SubmitField
+from wtforms              import TextAreaField, SubmitField
 
-from wtforms.validators  import ValidationError, Length
+from wtforms.fields.html5 import DateField
 
-from wtforms.validators  import DataRequired, EqualTo
+from wtforms.validators   import ValidationError, Length
 
-from app.models          import Physician
+from wtforms.validators   import DataRequired, EqualTo
 
-from cryptography.fernet import Fernet
+from app.models           import Physician
+
+from cryptography.fernet  import Fernet
 
 # WEB FORM CLASSES
 
@@ -55,8 +57,10 @@ class RecordForm(FlaskForm):
   patfname = StringField("Patient First Name",    validators=[DataRequired()])
 
   patlname = StringField("Patient Last Name",     validators=[DataRequired()])
-  
-  patdob   = StringField("Patient Date of Birth", validators=[DataRequired()])
+
+
+  patdob = DateField("Patient Date of Birth",     validators=[DataRequired()],
+    format="%Y-%m-%d")
 
   patdiag  = TextAreaField("Patient Diagnosis",
     validators=[DataRequired(), Length(min=1, max=250)])

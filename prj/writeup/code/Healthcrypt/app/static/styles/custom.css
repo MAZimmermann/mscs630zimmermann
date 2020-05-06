@@ -1,11 +1,21 @@
-@media screen and (max-width: 750) {
-  /*.welcome-adjustable.div.button.button-primary {
-    min-width: none;
-  }*/
+.form-column {
+  margin: 0px !important;
+  width: 50% !important;
+  float: left;
+}
+
+@media screen and (max-width: 750px) {
+  .form-column {
+    margin: 0px !important;
+    width: 100% !important;
+    clear: both;
+  }
 }
 
 @media screen and (min-width: 751px) {
-  /*.welcome-adjustable.div.button.button-primary {
-    min-width: 100px;
-  }*/
+  .form-column {
+    margin: 0px !important;
+    width: 50% !important;
+    float: left;
+  }
 }
