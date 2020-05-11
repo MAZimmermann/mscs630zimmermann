@@ -10,6 +10,11 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 
 class Config(object):
 
+  """
+  Allows us to use the convenient "config.from_object()" in
+   "__init__.py" and conduct configuration changes in one place
+  """
+
   # Used for securely signing the session cookie
   SECRET_KEY = os.environ.get("SECRET_KEY") or "MarcusZimmermann"
 

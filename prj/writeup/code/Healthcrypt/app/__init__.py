@@ -22,6 +22,10 @@ from cryptography.fernet import Fernet
 
 app = Flask(__name__)
 
+"""
+CONSOLIDATE?
+"""
+
 app.config.from_object(Config)
 
 db = SQLAlchemy(app)
@@ -31,6 +35,8 @@ migrate = Migrate(app, db)
 login_manager = LoginManager(app)
 
 login_manager.login_view = "login"
+
+# PLACEMENT OF FINAL IMPORTS AVOIDS CIRCULAR IMPORTS
 
 from app import routes, models
 
